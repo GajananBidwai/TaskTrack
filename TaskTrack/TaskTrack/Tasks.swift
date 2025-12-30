@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 @Model
-class Task: Identifiable {
+class Tasks: Identifiable {
     var id: UUID
     var title: String
     var date: Date

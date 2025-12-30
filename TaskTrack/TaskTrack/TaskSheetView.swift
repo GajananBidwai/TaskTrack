@@ -11,9 +11,10 @@ import SwiftData
 struct TaskSheetView: View {
     @State private var taskTitle: String = ""
     @State private var taskDate: Date = .init()
-    
+    @State private var isButtonDisabeld: Bool = false
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) private var context
+    var notificationViewModel = NotificationViewModel.shared
     
     var body: some View {
             VStack(alignment: .leading, spacing: 25) {
@@ -26,11 +27,24 @@ struct TaskSheetView: View {
                         
                         Spacer()
                         
+//                            let task = Task(title: taskTitle, date: taskDate)
+//                            do {
+//                                context.insert(task)
+//                                try context.save()
+//                                dismiss()
+//                            } catch {
+//                                print(error.localizedDescription)
+//                            }
+                            
+                            
                         Button {
-                            let task = Task(title: taskTitle, date: taskDate)
+                            let task = Tasks(title: taskTitle, date: taskDate)
                             do {
                                 context.insert(task)
                                 try context.save()
+                                Task {
+                                    await notification()
+                                }
                                 dismiss()
                             } catch {
                                 print(error.localizedDescription)
@@ -39,6 +53,7 @@ struct TaskSheetView: View {
                             Text("Add")
                                 .foregroundColor(.primary)
                         }
+
                     }
                     
                     Spacer()
@@ -68,14 +83,18 @@ struct TaskSheetView: View {
                 Spacer()
                 
                 Button {
-                    let task = Task(title: taskTitle, date: taskDate)
+                    let task = Tasks(title: taskTitle, date: taskDate)
                     do {
                         context.insert(task)
                         try context.save()
+                        Task {
+                            await notification()
+                        }
                         dismiss()
                     } catch {
                         print(error.localizedDescription)
                     }
+                    
                 } label: {
                     Text("Add Task")
                         .fontWeight(.bold)
@@ -85,12 +104,24 @@ struct TaskSheetView: View {
                         .foregroundColor(Color.accentColor)
                         .clipShape(.rect(cornerRadius: 10))
                         .padding()
-                }
+                }.disabled(isButtonDisabeld)
+                
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             .ignoresSafeArea()
             .preferredColorScheme(.dark)
             .padding(.bottom)
+            .task(priority: .background) {
+                let authorization = await notificationViewModel.askAuthorization()
+                isButtonDisabeld = !authorization
+            }
+    }
+    
+    func notification() async {
+        await notificationViewModel.postNotificationBasesOnTime(
+            time: taskDate.timeIntervalSinceNow,
+            taskName: taskTitle
+        )
     }
 }
 

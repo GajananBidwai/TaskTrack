@@ -9,10 +9,13 @@ import SwiftUI
 
 @main
 struct TaskTrackApp: App {
+    var notification = NotificationViewModel.shared
     var body: some Scene {
         WindowGroup {
             TaskView()
+                .environment(notification)
         }
-        .modelContainer(for: Task.self)
+        .modelContainer(for: Tasks.self)
+        
     }
 }

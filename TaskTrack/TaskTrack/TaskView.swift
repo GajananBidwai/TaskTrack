@@ -11,7 +11,7 @@ import SwiftData
 struct TaskView: View {
     @StateObject var viewModel = TaskViewModel()
     @State private var createNewTask: Bool = false
-    @State var currentDate: Date = .init()
+    @State var currentDate: Date = Date()
         
     var body: some View {
         NavigationStack {
@@ -68,6 +68,6 @@ struct TaskView: View {
 #Preview {
     NavigationView {
         TaskView()
-            .modelContainer(for: Task.self)
+            .modelContainer(for: Tasks.self)
     }
 }
