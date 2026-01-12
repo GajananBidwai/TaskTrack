@@ -67,7 +67,7 @@ struct TaskSheetView: View {
                         .font(.body)
                         .frame(height: 35)
                         .background(.secondary)
-                        .foregroundColor(Color.secondaryText)
+                        .foregroundColor(Color.white)
                         .cornerRadius(6)
                     
                     Text("Task Date")
